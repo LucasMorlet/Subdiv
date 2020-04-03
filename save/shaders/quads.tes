@@ -1,0 +1,18 @@
+// Version du GLSL
+#version 430 core
+
+layout( quads, equal_spacing, ccw ) in;
+in vec3 tex_coords_tes[];
+out vec3 tex_coord;
+void main()
+{
+    // Position du sommet
+    vec4 a = mix( gl_in[0].gl_Position, gl_in[3].gl_Position, gl_TessCoord.s );
+    vec4 b = mix( gl_in[1].gl_Position, gl_in[2].gl_Position, gl_TessCoord.s );
+    gl_Position = mix( a, b, gl_TessCoord.t );
+
+    // La couleur
+    vec3 c = mix( tex_coords_tes[0], tex_coords_tes[3], gl_TessCoord.s );
+    vec3 d = mix( tex_coords_tes[1], tex_coords_tes[2], gl_TessCoord.s );
+    tex_coord = mix( c, d, gl_TessCoord.t );
+}

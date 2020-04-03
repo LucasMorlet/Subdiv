@@ -1,0 +1,23 @@
+// Version du GLSL
+#version 430 core
+
+layout(vertices = 1) out;
+in vec3 vert_color[];
+out vec3 tcs_color[];
+patch out vec3 normale_face;
+
+void main()
+{
+    if ( gl_InvocationID == 0 )
+    {
+        gl_TessLevelInner[0] = 3.0f;
+
+        gl_TessLevelOuter[0] = 4.0f;
+        gl_TessLevelOuter[1] = 4.0f;
+        gl_TessLevelOuter[2] = 4.0f;
+
+        vec3 p0 = gl_in[0].gl_Position.xyz;
+        normale_face = normalize ( cross ( gl_in[1].gl_Position.xyz - p0, gl_in[2].gl_Position.xyz - p0 ) );
+    }
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position; 
+}

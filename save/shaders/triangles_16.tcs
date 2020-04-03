@@ -1,0 +1,17 @@
+// Version du GLSL
+#version 430 core
+
+layout(vertices = 1) out;
+in vec3 vert_color[];
+out vec3 tcs_color[];
+
+void main()
+{
+    gl_TessLevelInner[0] = 3.0f;
+
+    gl_TessLevelOuter[0] = 4.0f;
+    gl_TessLevelOuter[1] = 4.0f;
+    gl_TessLevelOuter[2] = 4.0f;
+
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+}

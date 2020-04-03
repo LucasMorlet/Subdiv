@@ -1,0 +1,116 @@
+// Version du GLSL
+#version 430 core
+
+layout ( std430, binding = 4 ) buffer gg
+{
+    float combinaisons_barycentriques[];
+};
+layout ( std430, binding = 5 ) buffer tangentes_u
+{
+    float t_u[];
+};
+layout ( std430, binding = 6 ) buffer tangentes_v
+{
+    float t_v[];
+};
+layout( quads, equal_spacing, ccw ) in;
+
+// Inputs
+in vec2 tex_coords_tes[];
+patch in vec3 normale_face;
+
+// Les infos du patch de contrôle
+patch in uint index_patch;
+patch in uint size_patch;
+patch in vec3 patch_controle[20];
+
+// Outputs
+out vec3 tes_tangente;
+out vec3 tes_binormale;
+out vec3 tes_normale;
+out vec2 tex_coords;
+out vec2 tex_coords_locales;
+
+uint calculNumeroCombinaison ( float u, float v )
+{
+    uint ui = uint(u*32); // [0;16]
+    uint vi = uint(v*32); // [0;16]
+    return 33*ui + vi;  // [0;17^2[
+}
+
+uint calculDepart ( uint taille )
+{
+    uint depart = 0;
+    while ( taille > 14 )
+    {
+        taille -= 2;
+        depart += taille;
+    }
+    return depart * 1089; // dépend de la précision max
+}
+
+void calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
+{
+    // On initialise vide la position et les tangentes du point de la surface limite
+    vec3 point = vec3 ( 0.0f, 0.0f, 0.0f );
+    //vec3    tu = vec3 ( 0.0f, 0.0f, 0.0f );
+    //vec3    tv = vec3 ( 0.0f, 0.0f, 0.0f );
+
+    // Pour chaque point du patch, on applique sa contribution au point
+    for ( int i = 0 ; i < size_patch ; i++ )
+    {
+        //vec3 sommet = vec3 ( les_sommets[indices_patchs[index_patch + i]][0], les_sommets[indices_patchs[index_patch + i]][1], les_sommets[indices_patchs[index_patch + i]][2] );
+        vec3 sommet = patch_controle[i];
+        point += combinaisons_barycentriques[ depart + numero*size_patch + i] * sommet;
+        //tu += t_u[ depart + numero*size_patch + i ] * sommet;
+        //tv += t_v[ depart + numero*size_patch + i ] * sommet;
+    }
+
+    // On renseigne les variables dont on va avoir besoin
+    gl_Position =  vec4 ( point, 1.0f );
+
+    /*
+    tu = normalize ( tu );
+    tv = normalize ( tv );
+    vec3 norm = cross ( tu, tv );
+
+    if ( length ( norm - normale_face ) < length ( normale_face - norm ) )
+    {
+        tes_tangente  = tu;
+        tes_binormale = tv;
+        tes_normale   = norm;
+    }
+    else
+    {
+        tes_tangente  = tv;
+        tes_binormale = tu;
+        tes_normale   = -norm;
+    }
+    */
+    //tes_normale = normale_face;
+}
+
+vec3 calculCouleurPatch ( uint size_patch )
+{
+    if      ( size_patch == 14 ) return vec3 ( 0.0, 1.0, 0.0 );
+    else if ( size_patch == 16 ) return vec3 ( 1.0, 0.0, 0.0 );
+    else if ( size_patch == 18 ) return vec3 ( 0.0, 0.0, 1.0 );
+    else if ( size_patch == 20 ) return vec3 ( 1.0, 0.0, 1.0 );
+    else                         return vec3 ( 0.0, 1.0, 1.0 );
+}
+
+void main()
+{
+    // On calcule les infos dont on a besoin sur la mémoire
+    uint numero = calculNumeroCombinaison ( gl_TessCoord.s, gl_TessCoord.t );
+    uint depart = calculDepart ( size_patch );
+
+    // On applique les combinaisons pour calculer la position et la normale en chaque point
+    calculPoint  ( index_patch, size_patch, depart, numero );
+
+    // Les coordonnées de textures
+    vec2 c = mix( tex_coords_tes[0], tex_coords_tes[1], gl_TessCoord.s );
+    vec2 d = mix( tex_coords_tes[3], tex_coords_tes[2], gl_TessCoord.s );
+    tex_coords = mix( c, d, gl_TessCoord.t ).st;
+    tex_coords_locales = gl_TessCoord.st;
+}

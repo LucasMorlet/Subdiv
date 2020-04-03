@@ -1,0 +1,101 @@
+// Version du GLSL
+#version 430 core
+
+layout ( std430, binding = 1 ) buffer buff_sommets
+{
+    float les_sommets[][3];
+};
+layout ( std430, binding = 2 ) buffer buff_indices_patchs
+{
+    uint indices_patchs[]; // tous les index de sommets à la suite
+ };
+ layout ( std430, binding = 3 ) buffer buff_patchs
+ {
+     uint les_patchs[][2]; // début, taille
+  };
+layout ( std430, binding = 4 ) buffer gg
+{
+    float combinaisons_barycentriques[];
+};
+layout( quads, equal_spacing, ccw ) in;
+
+patch in vec3 couleur;
+out vec3 tes_color;
+out float u;
+out float v;
+
+uint calculNumeroCombinaison ( float u, float v )
+{
+    uint ui = uint(u*32); // [0;16]
+    uint vi = uint(v*32); // [0;16]
+    return 33*ui + vi;  // [0;17^2[
+}
+
+uint calculDepart ( uint taille )
+{
+    uint depart = 0;
+    while ( taille > 14 )
+    {
+        taille -= 2;
+        depart += taille;
+    }
+    return depart * 1089; // dépend de la précision max
+}
+
+vec4 calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
+{
+    vec4 point = vec4 ( 0.0f, 0.0f, 0.0f, 0.0f );
+    for ( int i = 0 ; i < size_patch ; i++ )
+    {
+        vec3 sommet = vec3 ( les_sommets[indices_patchs[index_patch + i]][0], les_sommets[indices_patchs[index_patch + i]][1], les_sommets[indices_patchs[index_patch + i]][2] );
+        point += combinaisons_barycentriques[ depart + numero*size_patch + i] * vec4( sommet, 1.0f );
+    }
+    return point;
+}
+
+vec3 calculCouleurInterpolee ( void )
+{
+    u = gl_TessCoord.s;
+    v = gl_TessCoord.t;
+    //vec3 couleur_b = u * couleur[1] + (1.0f-u) * couleur[0];
+    //vec3 couleur_h = u * couleur[2] + (1.0f-u) * couleur[3];
+    //return v * couleur_h + (1.0f-v) * couleur_b;
+    return vec3(0.0,0.0,0.0);
+}
+
+vec3 calculCouleurPatch ( uint size_patch )
+{
+    if ( size_patch == 14 )
+    {
+        return vec3 ( 0.0, 1.0, 0.0 );
+    }
+    else if ( size_patch == 16 )
+    {
+        return vec3 ( 1.0, 0.0, 0.0 );
+    }
+    else if ( size_patch == 18 )
+    {
+        return vec3 ( 0.0, 0.0, 1.0 );
+    }
+    else if ( size_patch == 20 )
+    {
+        return vec3 ( 1.0, 0.0, 1.0 );
+    }
+    else
+    {
+        return vec3 ( 0.0, 1.0, 1.0 );
+    }
+}
+
+void main()
+{
+    // On récupère les infos du patch
+    uint index_patch = les_patchs[gl_PrimitiveID][0];
+    uint size_patch  = les_patchs[gl_PrimitiveID][1];
+
+    uint numero = calculNumeroCombinaison ( gl_TessCoord.s, gl_TessCoord.t );
+    uint depart = calculDepart ( size_patch );
+    gl_Position = calculPoint  ( index_patch, size_patch, depart, numero );
+    tes_color = couleur;
+    tes_color = calculCouleurPatch ( size_patch );
+}

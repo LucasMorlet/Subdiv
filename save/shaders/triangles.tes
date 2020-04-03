@@ -1,0 +1,12 @@
+// Version du GLSL
+#version 430 core
+
+uniform mat4 MVP;
+layout( triangles, equal_spacing, ccw ) in;
+in vec3 tcs_color[];
+out vec3 tes_color;
+void main()
+{
+    gl_Position = gl_in[0].gl_Position.xyzw * gl_TessCoord.s + gl_in[1].gl_Position.xyzw * gl_TessCoord.t + gl_in[2].gl_Position.xyzw * gl_TessCoord.p;
+    tes_color = gl_TessCoord.s * tcs_color[0] + gl_TessCoord.t * tcs_color[1] + gl_TessCoord.p * tcs_color[2];
+}

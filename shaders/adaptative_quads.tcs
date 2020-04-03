@@ -1,0 +1,110 @@
+// Version du GLSL
+#version 430 core
+
+layout( vertices = 4 ) out;
+
+uniform uint level; // Level MAX
+uniform mat4 MVP;
+
+in vec2 tex_coords[];
+
+out vec2 tex_coords_tes[];
+patch out vec3 normale_face;
+
+
+
+float subdivLevel ( float longueur )
+{
+    uint subdiv = uint ( round ( clamp( 5*longueur, 0, level ) ) );
+    return float( pow ( 2, subdiv ) );
+}
+
+bool inVisibleCube ( vec3 point )
+{
+    if ( point.x <= -1.0f ) return false;
+    if ( point.y <= -1.0f ) return false;
+    if ( point.z <= 0.0f ) return false;
+    if ( point.x >= 1.0f ) return false;
+    if ( point.y >= 1.0f ) return false;
+    if ( point.z >= 1.0f ) return false;
+    return true;
+}
+
+void main()
+{
+    if ( gl_InvocationID == 0 )
+    {
+        bool visible = true;
+
+        // On calcul la position des sommets du maillage de contrôle à l'écran
+        vec3 p0 = normalize(MVP * gl_in[0].gl_Position).xyz;
+        vec3 p1 = normalize(MVP * gl_in[1].gl_Position).xyz;
+        vec3 p2 = normalize(MVP * gl_in[2].gl_Position).xyz;
+        vec3 p3 = normalize(MVP * gl_in[3].gl_Position).xyz;
+
+        // On teste si la face est visible : dans le clipping
+        visible = inVisibleCube ( p0 ) || inVisibleCube ( p1 ) || inVisibleCube ( p2 ) || inVisibleCube ( p3 );
+
+        // Selon sa visibilité :
+        if ( visible )
+        {
+            // On choisit le niveau de subdivision de chaque arête en fonction de sa longueur à l'écran
+            gl_TessLevelOuter[0] = subdivLevel( distance( p3.xy, p0.xy ) );
+            gl_TessLevelOuter[1] = subdivLevel( distance( p0.xy, p1.xy ) );
+            gl_TessLevelOuter[2] = subdivLevel( distance( p1.xy, p2.xy ) );
+            gl_TessLevelOuter[3] = subdivLevel( distance( p2.xy, p3.xy ) );
+
+            gl_TessLevelInner[0] = max ( gl_TessLevelOuter[0], gl_TessLevelOuter[2] );
+            gl_TessLevelInner[1] = max ( gl_TessLevelOuter[1], gl_TessLevelOuter[3] );
+        }
+        else
+        {
+            // On refuse l'affichage
+            gl_TessLevelOuter[0] = 0.0f;
+            gl_TessLevelOuter[1] = 0.0f;
+            gl_TessLevelOuter[2] = 0.0f;
+            gl_TessLevelOuter[3] = 0.0f;
+
+            gl_TessLevelInner[0] = 0.0f;
+            gl_TessLevelInner[1] = 0.0f;
+        }
+        // Calcul de la normale de la face
+        p0 = gl_in[0].gl_Position.xyz;
+        normale_face = normalize ( cross ( gl_in[1].gl_Position.xyz - p0, gl_in[3].gl_Position.xyz - p0 ) );
+    }
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+    tex_coords_tes[gl_InvocationID] = tex_coords[gl_InvocationID];
+
+
+    /*
+    uint max_subdiv = uint ( max ( gl_TessLevelInner[0], gl_TessLevelInner[1] ) );
+    if ( max_subdiv == 1 )
+    {
+        couleur = vec3 ( 0.0f, 0.0f, 1.0f );
+    }
+    else if ( max_subdiv == 2 )
+    {
+        couleur = vec3 ( 0.0f, 1.0f, 1.0f );
+    }
+    else if ( max_subdiv == 4 )
+    {
+        couleur = vec3 ( 0.0f, 1.0f, 0.0f );
+    }
+    else if ( max_subdiv == 8 )
+    {
+        couleur = vec3 ( 1.0f, 1.0f, 0.0f );
+    }
+    else if ( max_subdiv == 16 )
+    {
+        couleur = vec3 ( 1.0f, 0.5f, 0.0f );
+    }
+    else if ( max_subdiv == 32 )
+    {
+        couleur = vec3 ( 1.0f, 0.0f, 0.0f );
+    }
+    else
+    {
+        couleur = vec3 ( 1.0f, 0.0f, 1.0f );
+    }
+    */
+}

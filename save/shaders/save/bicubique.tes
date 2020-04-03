@@ -1,0 +1,35 @@
+// Version du GLSL
+#version 430 core
+
+uniform float combinaisons_barycentriques[25][];
+layout( quads, equal_spacing, ccw ) in;
+in vec3 tcs_color[];
+out vec3 tes_color;
+
+int calculCombinaison ( float u, float v )
+{
+    int coeff = 4; // Trouver un moyen de le calculer automatiquement ( = sqrt(25)-1 )
+    u *= coeff;
+    v *= coeff;
+    return int( u*coeff + v );
+}
+
+vec4 calculPoint ( float u, float v )
+{
+    int numero = calculCombinaison ( u, v );
+    vec4 point = vec4 ( 0.0f, 0.0f, 0.0f, 0.0f );
+    for ( int i = 0 ; i < gl_PatchVerticesIn ; i++ )
+    {
+        point += combinaisons_barycentriques[numero][i] * gl_in[i].gl_Position;
+    }
+    return point;
+}
+
+void main()
+{
+    gl_Position = calculPoint ( gl_TessCoord.s, gl_TessCoord.t );
+    // La couleur
+    vec3 c = mix( tcs_color[0], tcs_color[3], gl_TessCoord.s );
+    vec3 d = mix( tcs_color[1], tcs_color[2], gl_TessCoord.s );
+    tes_color = mix( c, d, gl_TessCoord.t );
+}

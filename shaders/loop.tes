@@ -1,0 +1,135 @@
+// Version du GLSL
+#version 430 core
+
+layout ( std430, binding = 1 ) buffer vert
+{
+    float les_sommets[][3]; // X, Y, Z, W, ++++ R, G, B
+};
+layout ( std430, binding = 2 ) buffer sdkfjslf
+{
+    uint indices_patchs[];
+ };
+ layout ( std430, binding = 3 ) buffer hh
+ {
+     uint les_patchs[][2];
+  };
+layout ( std430, binding = 4 ) buffer gg
+{
+    float combinaisons_barycentriques[];
+};
+layout ( std430, binding = 5 ) buffer tangentes_u
+{
+    float t_u[];
+};
+layout ( std430, binding = 6 ) buffer tangentes_v
+{
+    float t_v[];
+};
+layout( triangles, equal_spacing, ccw ) in;
+
+patch in vec3 couleur;
+patch in vec3 normale_face;
+out vec3 tes_color;
+out vec3 tes_normale;
+
+uint calculNumeroCombinaison ( float v, float w )
+{
+    v = 0.25f * round ( 4 * v );
+    w = 0.25f * round ( 4 * w );
+    if ( w == 0.0f )
+    {
+        return uint(0 + v*4); // 0 à 4
+    }
+    else if ( w == 0.25f )
+    {
+        return uint(5 + v*4); // 5 à 8
+    }
+    else if ( w == 0.50f )
+    {
+        return uint(9 + v*4); // 9 à 11
+    }
+    else if ( w == 0.75f )
+    {
+        return uint(12 + v*4); // 12 à 13
+    }
+    else if ( w == 1.0f )
+    {
+        return 14;
+    }
+    else
+    {
+        return 0; // Histoire de mettre un ELSE
+    }
+}
+
+uint calculDepart ( uint taille )
+{
+    uint depart = 0;
+    while ( taille > 9 )
+    {
+        taille--;
+        depart += taille;
+    }
+    return depart * 15; // dépend de la précision max
+}
+
+void calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
+{
+    // On initialise vide la position et les tangentes du point de la surface limite
+    vec3 point = vec3 ( 0.0f, 0.0f, 0.0f );
+    vec3    tu = vec3 ( 0.0f, 0.0f, 0.0f );
+    vec3    tv = vec3 ( 0.0f, 0.0f, 0.0f );
+
+    // Pour chaque point du patch, on applique sa contribution au point
+    for ( int i = 0 ; i < size_patch ; i++ )
+    {
+        vec3 sommet = vec3 ( les_sommets[indices_patchs[index_patch + i]][0], les_sommets[indices_patchs[index_patch + i]][1], les_sommets[indices_patchs[index_patch + i]][2] );
+        point += combinaisons_barycentriques[ depart + numero*size_patch + i] * sommet;
+        tu += t_u[ depart + numero*size_patch + i ] * sommet;
+        tv += t_v[ depart + numero*size_patch + i ] * sommet;
+    }
+
+    // On renseigne les variables OUT
+    gl_Position =  vec4 ( point, 1.0f );
+
+    vec3 norm  =  normalize ( cross ( tu, tv ) );
+    vec3 norm2 =  normalize ( cross ( tv, tu ) );
+    if ( length ( norm - normale_face ) < length ( norm2 - normale_face ) )
+    {
+        tes_normale = norm;
+    }
+    else
+    {
+        tes_normale = norm2;
+    }
+    //tes_normale = norm;
+    //tes_normale = norm2;
+    //tes_normale = normale_face;
+}
+
+vec3 calculCouleurPatch ( uint size_patch )
+{
+    if      ( size_patch ==  9 ) return vec3 ( 0.0, 1.0, 0.0 );
+    else if ( size_patch == 10 ) return vec3 ( 1.0, 0.0, 1.0 );
+    else if ( size_patch == 11 ) return vec3 ( 0.0, 0.0, 1.0 );
+    else if ( size_patch == 12 ) return vec3 ( 1.0, 0.0, 0.0 );
+    else                         return vec3 ( 0.0, 1.0, 1.0 );
+}
+
+void main()
+{
+    // On récupère les infos du patch
+    uint index_patch = les_patchs[gl_PrimitiveID][0];
+    uint size_patch  = les_patchs[gl_PrimitiveID][1];
+
+    // On calcule les infos dont on a besoin sur la mémoire
+    uint numero = calculNumeroCombinaison ( gl_TessCoord.s, gl_TessCoord.t );
+    uint depart = calculDepart ( size_patch );
+
+    // On applique les combinaisons pour calculer la position et la normale en chaque point
+    calculPoint  ( index_patch, size_patch, depart, numero );
+
+    // On transmet la couleur
+    tes_color = couleur;
+    tes_color = calculCouleurPatch ( size_patch );
+}

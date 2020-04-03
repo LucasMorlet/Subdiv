@@ -1,0 +1,83 @@
+// Version du GLSL
+#version 430 core
+
+layout( vertices = 4 ) out;
+uniform uint level; // Level MAX
+uniform mat4 MVP;
+patch out vec3 couleur;
+
+float subdivLevel ( float longueur )
+{
+    uint subdiv = uint ( round ( clamp( 5*longueur, 0, level ) ) );
+    return float( pow ( 2, subdiv ) );
+}
+
+void main()
+{
+    if ( gl_InvocationID == 0 )
+    {
+        // On calcule les fragments sur lesquels les sommets seront projetés
+        vec2 p0 = (MVP * gl_in[0].gl_Position).xy;
+        vec2 p1 = (MVP * gl_in[1].gl_Position).xy;
+        vec2 p2 = (MVP * gl_in[2].gl_Position).xy;
+        vec2 p3 = (MVP * gl_in[3].gl_Position).xy;
+
+        // On teste si la face est visible (normale bien orientée) /!\ ne marche que dans le cas où la subdivision reste planaire (simple tesselation)
+        bool visible = true;
+        // visible = ( cross ( vec3( p1 - p0, 0.0f ), vec3 ( p3 - p0, 0.0f ) ).z >= 0.0f );
+
+        // Selon sa visibilité :
+        if ( visible )
+        {
+            // On choisit le niveau de subdivision de chaque arête en fonction de sa longueur à l'écran
+            gl_TessLevelOuter[0] = subdivLevel( distance( p3, p0 ) );
+            gl_TessLevelOuter[1] = subdivLevel( distance( p0, p1 ) );
+            gl_TessLevelOuter[2] = subdivLevel( distance( p1, p2 ) );
+            gl_TessLevelOuter[3] = subdivLevel( distance( p2, p3 ) );
+
+            gl_TessLevelInner[0] = max ( gl_TessLevelOuter[0], gl_TessLevelOuter[2] );
+            gl_TessLevelInner[1] = max ( gl_TessLevelOuter[1], gl_TessLevelOuter[3] );
+        }
+        else
+        {
+            // On refuse l'affichage
+            gl_TessLevelOuter[0] = 0.0f;
+            gl_TessLevelOuter[1] = 0.0f;
+            gl_TessLevelOuter[2] = 0.0f;
+            gl_TessLevelOuter[3] = 0.0f;
+
+            gl_TessLevelInner[0] = 0.0f;
+            gl_TessLevelInner[1] = 0.0f;
+        }
+    }
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+    uint max_subdiv = uint ( max ( gl_TessLevelInner[0], gl_TessLevelInner[1] ) );
+    if ( max_subdiv == 1 )
+    {
+        couleur = vec3 ( 0.0f, 0.0f, 1.0f );
+    }
+    else if ( max_subdiv == 2 )
+    {
+        couleur = vec3 ( 0.0f, 1.0f, 1.0f );
+    }
+    else if ( max_subdiv == 4 )
+    {
+        couleur = vec3 ( 0.0f, 1.0f, 0.0f );
+    }
+    else if ( max_subdiv == 8 )
+    {
+        couleur = vec3 ( 1.0f, 1.0f, 0.0f );
+    }
+    else if ( max_subdiv == 16 )
+    {
+        couleur = vec3 ( 1.0f, 0.5f, 0.0f );
+    }
+    else if ( max_subdiv == 32 )
+    {
+        couleur = vec3 ( 1.0f, 0.0f, 0.0f );
+    }
+    else
+    {
+        couleur = vec3 ( 1.0f, 0.0f, 1.0f );
+    }
+}
