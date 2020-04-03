@@ -53,8 +53,8 @@ void calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
 {
     // On initialise vide la position et les tangentes du point de la surface limite
     vec3 point = vec3 ( 0.0f, 0.0f, 0.0f );
-    //vec3    tu = vec3 ( 0.0f, 0.0f, 0.0f );
-    //vec3    tv = vec3 ( 0.0f, 0.0f, 0.0f );
+    vec3    tu = vec3 ( 0.0f, 0.0f, 0.0f );
+    vec3    tv = vec3 ( 0.0f, 0.0f, 0.0f );
 
     // Pour chaque point du patch, on applique sa contribution au point
     for ( int i = 0 ; i < size_patch ; i++ )
@@ -62,14 +62,13 @@ void calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
         //vec3 sommet = vec3 ( les_sommets[indices_patchs[index_patch + i]][0], les_sommets[indices_patchs[index_patch + i]][1], les_sommets[indices_patchs[index_patch + i]][2] );
         vec3 sommet = patch_controle[i];
         point += combinaisons_barycentriques[ depart + numero*size_patch + i] * sommet;
-        //tu += t_u[ depart + numero*size_patch + i ] * sommet;
-        //tv += t_v[ depart + numero*size_patch + i ] * sommet;
+        tu += t_u[ depart + numero*size_patch + i ] * sommet;
+        tv += t_v[ depart + numero*size_patch + i ] * sommet;
     }
 
     // On renseigne les variables dont on va avoir besoin
     gl_Position =  vec4 ( point, 1.0f );
 
-    /*
     tu = normalize ( tu );
     tv = normalize ( tv );
     vec3 norm = cross ( tu, tv );
@@ -86,7 +85,7 @@ void calculPoint ( uint index_patch, uint size_patch, uint depart, uint numero )
         tes_binormale = tu;
         tes_normale   = -norm;
     }
-    */
+
     //tes_normale = normale_face;
 }
 

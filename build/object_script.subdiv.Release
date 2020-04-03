@@ -1,5 +1,7 @@
 release/main.o
+release/operateurs.o
 release/core.o
+release/vecteur.o
 release/matrice.o
 release/mot.o
 release/schema.o

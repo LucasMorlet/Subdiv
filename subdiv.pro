@@ -15,24 +15,32 @@ unix:LIBS += /usr/lib/x86_64-linux-gnu/libglut.so
 unix:LIBS += /usr/lib/x86_64-linux-gnu/libGLEW.so
 
 #***** Bibliothèques externes *****#
-HEADERS += GL/freeglut.h
+HEADERS += GL/freeglut.h \
+    src/outils/operateurs.h \
+    src/vecteur.h
 HEADERS += GL/freeglut_std.h
 HEADERS += GL/freeglut_ext.h
 HEADERS += GL/glew.h
 HEADERS += GL/wglew.h
 
 # Core
-HEADERS += \
-    src/main.h \
-    src/core.h
+HEADERS += src/main.h
+HEADERS += src/core.h
 
-SOURCES += \
-    src/main.cpp \
-    src/core.cpp
+SOURCES += src/main.cpp \
+    src/outils/operateurs.cpp
+SOURCES += src/core.cpp
+
+
+# Outils
+HEADERS += src/outils/vecteur.h
+HEADERS += src/outils/matrice.h
+
+SOURCES += src/outils/vecteur.cpp
+SOURCES += src/outils/matrice.cpp
 
 # Subdivision
 HEADERS += \
-    src/subdivision/matrice.h \
     src/subdivision/mot.h \
     src/subdivision/schema.h \
         src/subdivision/schemaquads.h \
@@ -44,7 +52,6 @@ HEADERS += \
         src/subdivision/schemaquadsnonuniforme.h
 
 SOURCES += \
-    src/subdivision/matrice.cpp \
     src/subdivision/mot.cpp \
     src/subdivision/schema.cpp \
         src/subdivision/schemaquads.cpp \

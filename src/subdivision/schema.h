@@ -2,7 +2,7 @@
 #define SCHEMA_H
 
 #include "../rendu/objet.h"
-#include "matrice.h"
+#include "../outils/operateurs.h"
 #include "mot.h"
 
 #include <QString>

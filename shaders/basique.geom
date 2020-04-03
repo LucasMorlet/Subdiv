@@ -11,7 +11,7 @@ layout (triangle_strip, max_vertices = 3) out;
 in vec3 tes_tangente [];
 in vec3 tes_binormale[];
 in vec3 tes_normale  [];
-in vec2 tex_coords[];
+in vec2 tex_coords   [];
 in vec2 tex_coords_locales[];
 
 out vec3 view_pos;

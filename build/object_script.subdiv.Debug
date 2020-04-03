@@ -1,5 +1,7 @@
 debug/main.o
+debug/operateurs.o
 debug/core.o
+debug/vecteur.o
 debug/matrice.o
 debug/mot.o
 debug/schema.o
