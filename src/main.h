@@ -5,6 +5,7 @@
 //#include <GL/freeglut.h>
 
 #include "gui/fenetre.h"
+#include "controls/keyboard.h"
 
 #include <QApplication>
 #include <QTextCodec>

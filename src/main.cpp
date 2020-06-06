@@ -22,8 +22,19 @@ int main ( int argc, char **argv )
     /*QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));*/
+
+    // Keyboard
+    Keyboard* keys = new Keyboard();
+    qApp->installEventFilter( keys );
+
+    // Main Window
     QString titre = "Subdiv";
-    Fenetre* fen = new Fenetre( titre );
+    Fenetre* fen = new Fenetre( titre, keys );
     fen->show();
-    return app.exec();
+
+    // Execute app
+    int exec = app.exec();
+    delete fen;
+    delete keys;
+    return exec;
 }

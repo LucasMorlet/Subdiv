@@ -14,10 +14,8 @@ unix:LIBS += /usr/lib/x86_64-linux-gnu/libGLU.so
 unix:LIBS += /usr/lib/x86_64-linux-gnu/libglut.so
 unix:LIBS += /usr/lib/x86_64-linux-gnu/libGLEW.so
 
-#***** Bibliothèques externes *****#
-HEADERS += GL/freeglut.h \
-    src/outils/operateurs.h \
-    src/vecteur.h
+#***** Headers externes *****#
+HEADERS += GL/freeglut.h
 HEADERS += GL/freeglut_std.h
 HEADERS += GL/freeglut_ext.h
 HEADERS += GL/glew.h
@@ -27,17 +25,21 @@ HEADERS += GL/wglew.h
 HEADERS += src/main.h
 HEADERS += src/core.h
 
-SOURCES += src/main.cpp \
-    src/outils/operateurs.cpp
+SOURCES += src/main.cpp
 SOURCES += src/core.cpp
 
+# Control
+HEADERS += src/controls/keyboard.h
+SOURCES += src/controls/keyboard.cpp
 
 # Outils
 HEADERS += src/outils/vecteur.h
 HEADERS += src/outils/matrice.h
+HEADERS += src/outils/operateurs.h
 
 SOURCES += src/outils/vecteur.cpp
 SOURCES += src/outils/matrice.cpp
+SOURCES += src/outils/operateurs.cpp
 
 # Subdivision
 HEADERS += \

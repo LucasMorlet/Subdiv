@@ -1,6 +1,6 @@
 #include "fenetre.h"
 
-Fenetre::Fenetre( QString titre ) : QMainWindow( NULL )
+Fenetre::Fenetre( QString titre, Keyboard* keys ) : QMainWindow( NULL )
 {
     // La fenêtre
     this->setWindowTitle( titre );
@@ -41,37 +41,24 @@ Fenetre::Fenetre( QString titre ) : QMainWindow( NULL )
     this->dockDroite->setFixedWidth( 300 );
     this->addDockWidget( Qt::RightDockWidgetArea, this->dockDroite );
 
-    qApp->installEventFilter(this);
+    QObject::connect( keys, SIGNAL(toggleLeftDock()), this, SLOT(toggleLeftDock()));
+    QObject::connect( keys, SIGNAL(toggleRightDock()), this, SLOT(toggleRightDock()));
+    QObject::connect( keys, SIGNAL(quitApp()), this, SLOT(quitApp()));
 }
 
-bool Fenetre::clavier( int touche )
+void Fenetre::toggleLeftDock()
 {
-    switch ( touche )
-    {
-        case Qt::Key_S :
-        {
-            if ( this->dockGauche->isVisible() ) this->dockGauche->hide();
-            else this->dockGauche->show();
-        }
-        break;
-        case Qt::Key_C :
-        {
-            if ( this->dockDroite->isVisible() ) this->dockDroite->hide();
-            else this->dockDroite->show();
-        }
-        break;
-        case Qt::Key_Escape : this->close();
-        break;
-        default : return false; // La touche n'est pas interceptée
-    }
-    return true; // La touche a été traitée par le switch -> elle est interceptée
+    if ( this->dockGauche->isVisible() ) this->dockGauche->hide();
+    else this->dockGauche->show();
 }
 
-bool Fenetre::eventFilter( QObject* object /*cible originale*/, QEvent* event )
+void Fenetre::toggleRightDock()
 {
-    if ( event->type() == QEvent::KeyPress )
-    {
-        return this->clavier( static_cast<QKeyEvent*>(event)->key() );
-    }
-    return false; // La cible originale reçoit quand même l'évenement
+    if ( this->dockDroite->isVisible() ) this->dockDroite->hide();
+    else this->dockDroite->show();
+}
+
+void Fenetre::quitApp()
+{
+    this->close();
 }

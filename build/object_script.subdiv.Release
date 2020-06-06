@@ -1,8 +1,9 @@
 release/main.o
-release/operateurs.o
 release/core.o
+release/keyboard.o
 release/vecteur.o
 release/matrice.o
+release/operateurs.o
 release/mot.o
 release/schema.o
 release/schemaquads.o
@@ -24,6 +25,7 @@ release/texture.o
 release/lumiere.o
 release/scene.o
 release/materiau.o
+release/moc_keyboard.o
 release/moc_panneaulateral.o
 release/moc_panneauscene.o
 release/moc_fenetre.o

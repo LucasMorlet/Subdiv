@@ -6,6 +6,7 @@
 #include "panneaulateral.h"
 #include "panneauscene.h"
 #include "../rendu/scene.h"
+#include "../controls/keyboard.h"
 
 #include <QMainWindow>
 #include <QDockWidget>
@@ -26,11 +27,12 @@ class Fenetre : public QMainWindow
         QDockWidget* dockDroite;
 
     public :
-        Fenetre( QString titre );
-        bool clavier ( int touche );
+        Fenetre( QString titre, Keyboard* keys );
 
-    protected :
-        bool eventFilter( QObject* object, QEvent* event ) override;
+    public slots :
+        void toggleLeftDock();
+        void toggleRightDock();
+        void quitApp();
 };
 
 #endif // FENETRE_H
