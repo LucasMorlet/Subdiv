@@ -28,10 +28,10 @@ class Matrice
         Matrice ( unsigned int L, unsigned int C, std::vector <float> coeff );
 
         // Accesseurs
-        unsigned int getNbLignes ( void );
-        unsigned int getNbColonnes ( void );
+        unsigned int getNbLignes ( void ) const;
+        unsigned int getNbColonnes ( void ) const;
         //arma::mat getArmaMatrice ( void );
-        Eigen::MatrixXd getEigenMatrice ( void );
+        Eigen::MatrixXd getEigenMatrice ( void ) const;
         void setEigenMatrice ( Eigen::MatrixXd matrice );
         bool isSquare( void ) const;
         double getCoeff ( unsigned int i, unsigned int j ) const;

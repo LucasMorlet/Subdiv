@@ -8,7 +8,7 @@
 #include "controls/keyboard.h"
 
 #include <QApplication>
-#include <QTextCodec>
+//#include <QTextCodec>
 
 
 

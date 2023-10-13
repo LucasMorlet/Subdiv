@@ -30,13 +30,13 @@ Fenetre::Fenetre( QString titre, Keyboard* keys ) : QMainWindow( NULL )
 
     // Les deux panneaux latéraux   
     this->pan_scene = new PanneauScene( scene );
-    this->dockGauche = new QDockWidget( this, 0 );
+    this->dockGauche = new QDockWidget( this, Qt::WindowFlags() );
     this->dockGauche->setWidget( pan_scene );
     this->dockGauche->setFixedWidth( 300 );
     this->addDockWidget( Qt::LeftDockWidgetArea, this->dockGauche );
 
     this->pan_core = new PanneauLateral( core, scene );
-    this->dockDroite = new QDockWidget( this, 0 );
+    this->dockDroite = new QDockWidget( this, Qt::WindowFlags() );
     this->dockDroite->setWidget( pan_core );
     this->dockDroite->setFixedWidth( 300 );
     this->addDockWidget( Qt::RightDockWidgetArea, this->dockDroite );

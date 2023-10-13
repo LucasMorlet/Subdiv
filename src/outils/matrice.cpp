@@ -41,11 +41,11 @@ Matrice::Matrice( unsigned int L, unsigned int C, arma::mat mat_arma, Eigen::Mat
 */
 
 // Accesseurs
-unsigned int Matrice::getNbLignes ( void )
+unsigned int Matrice::getNbLignes ( void ) const
 {
     return this->nb_lignes;
 }
-unsigned int Matrice::getNbColonnes ( void )
+unsigned int Matrice::getNbColonnes ( void ) const
 {
     return this->nb_colonnes;
 }
@@ -55,7 +55,7 @@ arma::mat Matrice::getArmaMatrice ( void )
     return this->matrice_armadillo;
 }
 */
-Eigen::MatrixXd Matrice::getEigenMatrice ( void )
+Eigen::MatrixXd Matrice::getEigenMatrice ( void ) const
 {
     return this->matrice_eigen;
 }

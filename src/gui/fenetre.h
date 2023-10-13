@@ -10,7 +10,7 @@
 
 #include <QMainWindow>
 #include <QDockWidget>
-#include <QDesktopWidget>
+#include <QScreen>
 
 //#include <windows.h>
 #include <GL/glew.h>

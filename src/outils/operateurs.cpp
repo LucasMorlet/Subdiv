@@ -1,6 +1,6 @@
 #include "operateurs.h"
 
-Matrice operator* ( Matrice A, Matrice B )
+Matrice operator* ( const Matrice& A, const Matrice& B )
 {
     if ( A.getNbColonnes() != B.getNbLignes() )
     {
@@ -15,7 +15,7 @@ Matrice operator* ( Matrice A, Matrice B )
     }
 }
 
-Matrice operator* ( float lambda, Matrice M )
+Matrice operator* ( float lambda, const Matrice& M )
 {
     Matrice res = Matrice ( M.getNbLignes(), M.getNbColonnes() );
     for ( unsigned int i = 0 ; i < M.getNbLignes() ; i++ )
@@ -28,7 +28,7 @@ Matrice operator* ( float lambda, Matrice M )
     return res;
 }
 
-Vecteur operator* ( float lambda, Vecteur V )
+Vecteur operator* ( float lambda, const Vecteur& V )
 {
     unsigned int n = V.getTaille();
     Vecteur res = Vecteur ( n );
@@ -39,7 +39,7 @@ Vecteur operator* ( float lambda, Vecteur V )
     return res;
 }
 
-Vecteur operator* ( Matrice M, Vecteur V )
+Vecteur operator* ( const Matrice& M, const Vecteur& V )
 {
     unsigned int n = V.getTaille();
     Vecteur res = Vecteur ( n );
@@ -53,7 +53,7 @@ Vecteur operator* ( Matrice M, Vecteur V )
     }
     return res;
 }
-Vecteur operator* ( Vecteur V, Matrice M )
+Vecteur operator* ( const Vecteur& V, const Matrice& M )
 {
     unsigned int n = V.getTaille();
     Vecteur res = Vecteur ( n );

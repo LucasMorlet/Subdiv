@@ -3,8 +3,10 @@
 
 #include "shaderprogram.h"
 
-//#include <GL/glew.h>
-#include <QGLWidget>
+#include <GL/glew.h>
+#include <GL/wglew.h>
+//#include <QtOpenGL>
+#include <QOpenGLWidget>
 #include <QString>
 #include <QImage>
 #include <QCoreApplication>

@@ -8,7 +8,8 @@ Texture::Texture( void )
 Texture::Texture( QString nom, texture_type t )
 {
     // Création de l'objet texture
-    this->image = QGLWidget::convertToGLFormat( QImage(QString( nom )) );
+    //this->image = QOpenGLWidget::convertToGLFormat( QImage(QString( nom )) );
+    this->image = QImage(QString( nom ));
     this->type = t;
     this->num = GL_TEXTURE0 + t;
 

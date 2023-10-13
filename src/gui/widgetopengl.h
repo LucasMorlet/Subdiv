@@ -7,12 +7,12 @@
 #include "../rendu/shaderprogram.h"
 #include "../subdivision/schema.h"
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QKeyEvent>
 #include <vector>
 #include <cmath>
 
-class WidgetOpenGL : public QGLWidget
+class WidgetOpenGL : public QOpenGLWidget
 {
     Q_OBJECT
 

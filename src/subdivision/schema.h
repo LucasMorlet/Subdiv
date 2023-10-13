@@ -6,9 +6,10 @@
 #include "mot.h"
 
 #include <QString>
-//#define GLEW_STATIC
-//#include <GL/glew.h>
-//#include <GL/wglew.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <GL/wglew.h>
+//#include <QOpenGLFunctions> // redéfini les fonctions openGL de base
 
 class Schema
 {

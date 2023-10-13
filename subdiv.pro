@@ -1,6 +1,6 @@
 TEMPLATE = app
 CONFIG += c++11
-QT += opengl
+QT += gui core widgets openglwidgets
 QMAKE_CXXFLAGS += -std=c++11
 
 #***** Les bibliothèques Windows *****#
